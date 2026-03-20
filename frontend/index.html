@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OnChain AI Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a08;
+    --surface: #111110;
+    --border: #222220;
+    --accent: #c8f55a;
+    --accent-dim: #8aaa2e;
+    --text: #e8e6e0;
+    --muted: #666660;
+    --error: #f55a5a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 24px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    margin-bottom: 64px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    padding: 4px 10px;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 480px;
+  }
+
+  .subtitle a {
+    color: var(--accent-dim);
+    text-decoration: none;
+  }
+
+  /* Network badge */
+  .network-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 20px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Wallet input */
+  .wallet-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--accent-dim);
+  }
+
+  input[type="text"]::placeholder {
+    color: var(--muted);
+  }
+
+  /* Textarea */
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    line-height: 1.6;
+    padding: 20px;
+    resize: vertical;
+    min-height: 140px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+  }
+
+  textarea:focus {
+    border-color: var(--accent-dim);
+  }
+
+  textarea::placeholder {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Buttons */
+  button {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    padding: 12px 24px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a08;
+    font-weight: 500;
+  }
+
+  .btn-primary:hover {
+    background: #d4ff60;
+  }
+
+  .btn-primary:disabled {
+    background: var(--border);
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--muted);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Result card */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .result-card.show { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .result-value {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .result-value:last-child { margin-bottom: 0; }
+
+  .tx-link {
+    color: var(--accent-dim);
+    text-decoration: none;
+    font-size: 11px;
+    word-break: break-all;
+  }
+
+  .tx-link:hover { color: var(--accent); }
+
+  /* Entry list */
+  .entry-list { display: flex; flex-direction: column; gap: 1px; }
+
+  .entry-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .entry-date {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .entry-summary {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .entry-raw {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Reflection box */
+  .reflection-box {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 24px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .reflection-box.show {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .reflection-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    font-style: italic;
+    color: var(--text);
+  }
+
+  /* Status messages */
+  .status {
+    font-size: 11px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .status.show { display: block; }
+  .status.loading { color: var(--accent-dim); background: rgba(200,245,90,0.05); border: 1px solid rgba(200,245,90,0.1); }
+  .status.error { color: var(--error); background: rgba(245,90,90,0.05); border: 1px solid rgba(245,90,90,0.1); }
+  .status.success { color: var(--accent); background: rgba(200,245,90,0.05); border: 1px solid rgba(200,245,90,0.1); }
+
+  /* Skill CTA */
+  .skill-cta {
+    margin-top: 64px;
+    padding: 28px;
+    border: 1px dashed var(--border);
+  }
+
+  .skill-cta p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .skill-url {
+    font-size: 12px;
+    color: var(--accent-dim);
+    background: var(--bg);
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    display: block;
+    word-break: break-all;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .skill-url:hover { color: var(--accent); }
+
+  .empty-state {
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">The Synthesis 2026 · Status Network Track</div>
+    <h1>OnChain <em>AI Journal</em></h1>
+    <p class="subtitle">
+      A reusable agent skill. Write permanently on Ethereum L2 — gaslessly.<br>
+      Any AI agent can use this by reading
+      <a href="https://raw.githubusercontent.com/yagneshpatel931/journal-skill/main/SKILL.md" target="_blank">SKILL.md</a>.
+    </p>
+    <div class="network-badge">
+      <span class="dot"></span>
+      Status Network Testnet · Chain ID 1660990954 · Gas Price 0
+    </div>
+  </header>
+
+  <!-- Wallet -->
+  <section>
+    <div class="section-label">Your wallet address</div>
+    <div class="wallet-row">
+      <input type="text" id="wallet" placeholder="0x... (any valid Ethereum address)" />
+      <button class="btn-ghost" onclick="loadEntries()">Load entries</button>
+    </div>
+  </section>
+
+  <!-- Write Entry -->
+  <section>
+    <div class="section-label">Write an entry</div>
+    <textarea id="rawEntry" placeholder="Write anything... I'll summarize it and store it on-chain forever."></textarea>
+    <div class="btn-row">
+      <button class="btn-primary" id="writeBtn" onclick="writeEntry()">Store on-chain →</button>
+      <span style="font-size:11px;color:var(--muted);">gasless · permanent · AI-summarized</span>
+    </div>
+    <div class="status" id="writeStatus"></div>
+    <div class="result-card" id="writeResult">
+      <div class="result-label">AI Summary</div>
+      <div class="result-value" id="summaryOut"></div>
+      <div class="result-label">Transaction</div>
+      <div class="result-value">
+        <a class="tx-link" id="txLink" href="#" target="_blank"></a>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- Entries -->
+  <section>
+    <div class="section-label">Past entries</div>
+    <div id="entriesList"><p class="empty-state">Enter a wallet address above and click "Load entries"</p></div>
+  </section>
+
+  <!-- Reflect -->
+  <section>
+    <div class="section-label">AI reflection</div>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="reflect()">Reflect on my journal →</button>
+    </div>
+    <div class="status" id="reflectStatus"></div>
+    <div class="reflection-box" id="reflectionBox">
+      <div class="reflection-text" id="reflectionText"></div>
+    </div>
+  </section>
+
+  <!-- Skill CTA -->
+  <div class="skill-cta">
+    <p>🤖 <strong style="color:var(--text)">Agent? Read the skill.</strong><br>
+    Drop this URL into your agent's context and it instantly knows how to journal on-chain.</p>
+    <code class="skill-url" onclick="copySkill(this)">
+      curl -s https://raw.githubusercontent.com/yagneshpatel931/journal-skill/main/SKILL.md
+    </code>
+  </div>
+
+</div>
+
+<script>
+  const API = "https://journal-skill.vercel.app"; // update after deploy
+
+  function getWallet() {
+    return document.getElementById("wallet").value.trim();
+  }
+
+  function setStatus(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = `status show ${type}`;
+  }
+
+  function clearStatus(id) {
+    const el = document.getElementById(id);
+    el.className = "status";
+  }
+
+  async function writeEntry() {
+    const raw = document.getElementById("rawEntry").value.trim();
+    const wallet = getWallet();
+    const btn = document.getElementById("writeBtn");
+
+    if (!raw) return setStatus("writeStatus", "Please write something first.", "error");
+    if (!wallet) return setStatus("writeStatus", "Please enter your wallet address.", "error");
+
+    btn.disabled = true;
+    setStatus("writeStatus", "Summarizing with AI and storing on-chain (gasless)...", "loading");
+    document.getElementById("writeResult").classList.remove("show");
+
+    try {
+      const res = await fetch(`${API}/journal/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ raw, wallet })
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed");
+
+      document.getElementById("summaryOut").textContent = data.summary;
+      const txLink = document.getElementById("txLink");
+      txLink.href = data.explorerUrl;
+      txLink.textContent = data.explorerUrl;
+      document.getElementById("writeResult").classList.add("show");
+
+      clearStatus("writeStatus");
+      document.getElementById("rawEntry").value = "";
+      loadEntries();
+    } catch (err) {
+      setStatus("writeStatus", `Error: ${err.message}`, "error");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function loadEntries() {
+    const wallet = getWallet();
+    if (!wallet) return;
+
+    const list = document.getElementById("entriesList");
+    list.innerHTML = '<p class="empty-state">Loading...</p>';
+
+    try {
+      const res = await fetch(`${API}/journal/entries?wallet=${wallet}`);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error);
+      if (data.count === 0) {
+        list.innerHTML = '<p class="empty-state">No entries yet. Write your first one above.</p>';
+        return;
+      }
+
+      list.innerHTML = "";
+      const div = document.createElement("div");
+      div.className = "entry-list";
+
+      [...data.entries].reverse().forEach(entry => {
+        const item = document.createElement("div");
+        item.className = "entry-item";
+        item.innerHTML = `
+          <div class="entry-date">${new Date(entry.timestamp * 1000).toLocaleDateString("en-US", { weekday: "short", year: "numeric", month: "short", day: "numeric" })}</div>
+          <div class="entry-summary">${entry.summary}</div>
+          <div class="entry-raw">"${entry.raw}"</div>
+        `;
+        div.appendChild(item);
+      });
+
+      list.appendChild(div);
+    } catch (err) {
+      list.innerHTML = `<p class="empty-state" style="color:var(--error)">${err.message}</p>`;
+    }
+  }
+
+  async function reflect() {
+    const wallet = getWallet();
+    if (!wallet) return setStatus("reflectStatus", "Please enter a wallet address first.", "error");
+
+    setStatus("reflectStatus", "Reading entries and reflecting...", "loading");
+    document.getElementById("reflectionBox").classList.remove("show");
+
+    try {
+      const res = await fetch(`${API}/journal/reflect?wallet=${wallet}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      document.getElementById("reflectionText").textContent = data.reflection;
+      document.getElementById("reflectionBox").classList.add("show");
+      clearStatus("reflectStatus");
+    } catch (err) {
+      setStatus("reflectStatus", `Error: ${err.message}`, "error");
+    }
+  }
+
+  function copySkill(el) {
+    navigator.clipboard.writeText(el.textContent.trim());
+    const orig = el.style.color;
+    el.style.color = "var(--accent)";
+    setTimeout(() => el.style.color = orig, 800);
+  }
+</script>
+</body>
+</html>
