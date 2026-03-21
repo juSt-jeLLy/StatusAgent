@@ -6,7 +6,7 @@
 
 Users speak naturally. The AI agent summarizes their entry and stores both the raw input and the summary permanently on the blockchain — with **zero gas fees**, thanks to Status Network's protocol-level gasless transactions (gas literally set to 0, not sponsored or abstracted).
 
-Any AI agent can drop in `SKILL.md` and instantly gain the ability to:
+Any AI agent can read `AGENTS.md` and instantly gain the ability to:
 - ✍️ Write journal entries on-chain (gasless, no wallet needed)
 - 📖 Read past entries by username
 - 🪞 Reflect on patterns across all entries using AI
@@ -22,7 +22,7 @@ Any AI agent can drop in `SKILL.md` and instantly gain the ability to:
 
 | Criteria | Proof |
 |----------|-------|
-| Smart contract deployed on Status Network Sepolia | `0x707824869CD41B9b046bc0e09d4f92ef1BD06Bb7` |
+| Smart contract deployed on Status Network Sepolia | [0x707824869CD41B9b046bc0e09d4f92ef1BD06Bb7](https://sepoliascan.status.network/address/0x707824869CD41B9b046bc0e09d4f92ef1BD06Bb7?tab=txs) |
 | Gasless transaction (gas = 0) executed | [View TX](https://sepoliascan.status.network/tx/0x56b5377666ab1d0862b53affd7cb680e956e9f319e9d4edacce2980d8015af1e) |
 | AI agent component | Groq (llama-3.3-70b) summarizes entries before storing |
 | README | You're reading it |
@@ -71,7 +71,7 @@ curl -X POST https://status-agent-gamma.vercel.app/journal/add \
 
 Traditional journaling apps are centralized — they can shut down, lose your data, or sell it. This puts your journal **on Ethereum L2**, permanent and verifiable, with AI making it effortless to capture thoughts naturally.
 
-More importantly — this is **agentic infrastructure**. Not just an app. Any AI agent in the world can read `SKILL.md` and immediately gain on-chain journaling ability. No wallet required on the agent's side.
+More importantly — this is **agentic infrastructure**. Not just an app. Any AI agent in the world can read `AGENTS.md` and immediately gain on-chain journaling ability. No wallet required on the agent's side.
 
 ---
 
@@ -119,12 +119,12 @@ GET https://status-agent-gamma.vercel.app/health
 
 ---
 
-## Agent Skill
+## For AI Agents
 
-Any agent can use this by reading the skill file:
+Any agent can use this by reading the instructions file:
 
 ```bash
-curl -s https://raw.githubusercontent.com/juSt-jeLLy/StatusAgent/main/SKILL.md
+curl -s https://raw.githubusercontent.com/juSt-jeLLy/StatusAgent/main/AGENTS.md
 ```
 
 No wallet. No ETH. No setup. Just HTTP calls.
@@ -145,8 +145,7 @@ No wallet. No ETH. No setup. Just HTTP calls.
 
 ```
 StatusAgent/
-├── SKILL.md          ← reusable agent skill
-├── AGENTS.md         ← instructions for AI judges
+├── AGENTS.md         ← agent skill + judge instructions (one file does both)
 ├── README.md         ← this file
 ├── contract/
 │   └── Journal.sol   ← Solidity smart contract
