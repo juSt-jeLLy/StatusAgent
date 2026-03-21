@@ -2,6 +2,12 @@
 
 > A reusable agent skill for writing permanent, AI-summarized journal entries on-chain — gaslessly on Status Network.
 
+> Any agent can use this by reading the instructions file:
+
+```bash
+curl -s https://raw.githubusercontent.com/juSt-jeLLy/StatusAgent/main/AGENTS.md
+```
+
 ## What It Does
 
 Users speak naturally. The AI agent summarizes their entry and stores both the raw input and the summary permanently on the blockchain — with **zero gas fees**, thanks to Status Network's protocol-level gasless transactions (gas literally set to 0, not sponsored or abstracted).
