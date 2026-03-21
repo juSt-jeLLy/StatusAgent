@@ -19,6 +19,13 @@ Any AI agent can read `AGENTS.md` and instantly gain the ability to:
 
 ---
 
+## Live 
+
+```
+https://cute-semifreddo-d6a470.netlify.app/
+```
+
+
 ## Status Network Track
 
 **Track:** Go Gasless: Deploy & Transact on Status Network with Your AI Agent
