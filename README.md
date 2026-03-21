@@ -44,7 +44,7 @@ User (natural language)
 
 ```
 journal-skill/
-├── SKILL.md          ← drop this into any AI agent
+├── AGENTS.md          ← drop this into any AI agent
 ├── contract/
 │   └── Journal.sol   ← Solidity smart contract
 ├── example/
